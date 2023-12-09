@@ -73,6 +73,17 @@ class SCF:
         self.energies.append(newE)
 
 
+    def iter_until(self, convergence_threshold: float, max_iter = 1000):
+        self.run_SCF_iteration()
+        self.run_SCF_iteration()
+        for i in range(max_iter):
+            self.run_SCF_iteration()
+            if abs(self.energies[-1] - self.energies[-2]) < convergence_threshold:
+                return
+        print(f"WARNING: Convergence threshold {convergence_threshold} not reached after max_iter {max_iter} iterations.")
+        print("Last energies:", self.energies[-10:-1])
+
+
     def check_consistency(self):
         SCe = psi4.core.triplet(self.S, self.C, Matrix.from_array(np.diag(self.Fock_eigvals.to_array())))
         FC = psi4.core.doublet(self.Fock, self.C)

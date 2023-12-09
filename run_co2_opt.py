@@ -27,12 +27,7 @@ if not os.path.isfile('co2line_coarse.csv'):
 
         # set up the calculation
         co2_HF = SCF(co2, N_elec, basisset)
-        co2_HF.run_SCF_iteration()
-        co2_HF.run_SCF_iteration()
-
-        while abs(co2_HF.energies[-1] - co2_HF.energies[-2]) > CONVERGENCE:
-            co2_HF.run_SCF_iteration()
-
+        co2_HF.iter_until(CONVERGENCE)
         co2_HF.check_consistency()
         print(co2_HF.energies)
         co2_opt_energies.append(co2_HF.energies[-1])
@@ -70,12 +65,7 @@ if os.path.isfile('co2line_coarse.csv') and not os.path.isfile('co2line_fine.csv
 
         # set up the calculation
         co2_HF2 = SCF(co2, N_elec, basisset)
-        co2_HF2.run_SCF_iteration()
-        co2_HF2.run_SCF_iteration()
-
-        while abs(co2_HF2.energies[-1] - co2_HF2.energies[-2]) > CONVERGENCE_2:
-            co2_HF2.run_SCF_iteration()
-
+        co2_HF2.iter_until(CONVERGENCE_2)
         fine_co2_opt_energies.append(co2_HF2.energies[-1])
 
     with open('co2line_fine.csv', 'w', newline='') as csvfile:
