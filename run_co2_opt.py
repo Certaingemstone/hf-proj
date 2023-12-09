@@ -63,7 +63,7 @@ if os.path.isfile(f'co2line_coarse{BASIS}.csv') and not os.path.isfile(f'co2line
         print("Computing energy for CO2 bond length:", xyz[-1][0])
         co2 = Molecule.from_arrays(geom=xyz, elez=co2elez)
         N_elec = np.sum(co2elez)
-        basisset = BasisSet.build(co2, target='sto-3g', quiet=True)
+        basisset = BasisSet.build(co2, target=BASIS, quiet=True)
 
         # set up the calculation
         co2_HF2 = SCF(co2, N_elec, basisset)
