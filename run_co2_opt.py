@@ -6,6 +6,7 @@ from psi4.core import Molecule, BasisSet
 
 import csv
 import os.path
+#from multiprocessing import Process
 
 CONVERGENCE = 2e-7 # Hartrees
 CONVERGENCE_2 = 1e-9
@@ -15,7 +16,7 @@ co2elez = [8, 6, 8]
 
 if not os.path.isfile(f'co2line_coarse{BASIS}.csv'):
     # define CO2 line search
-    co2_bondlengths = [1.4 - i * 0.003 for i in range(100)]
+    co2_bondlengths = [1.23 - i * 0.003 for i in range(50)]
     co2xyz = [[[-length, 0, 0], [0, 0, 0], [length, 0, 0]] for length in co2_bondlengths]
     
     co2_opt_energies = []

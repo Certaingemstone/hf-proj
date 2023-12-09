@@ -20,7 +20,7 @@ tmin = 1.73
 tmax = 1.96
 Nt = 40
 
-LS = opt.LineSearch2D(water_generator, N_elec, 'sto-3g', Lmin, Lmax, tmin, tmax, NL, Nt, 1e-6)
-LS.search(max_iter=100) # up to 8000 energy evaluations allowed
+LS = opt.LineSearch2D(water_generator, N_elec, '6-31gs', Lmin, Lmax, tmin, tmax, NL, Nt, 1e-6)
+LS.search(max_iter=60)
 
-LS.save("test.csv")
+LS.save("h2o_6-31gs.csv")
