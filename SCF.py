@@ -19,7 +19,8 @@ class SCF:
         h.add(mints.ao_potential())
         self.h = h
         self.S = mints.ao_overlap() # n x n
-        self.ERI = mints.ao_eri().to_array() # n x n x n x n two-electron integrals 
+        self.ERI = mints.ao_eri().to_array() # n x n x n x n two-electron integrals
+        self.ERI2 = np.transpose(self.ERI, axes=(0,2,1,3)) # for use in updating F
         self.nbf = self.S.shape[0]
 
         # prepare for iterations
@@ -57,23 +58,21 @@ class SCF:
         C_np = self.C.to_array()
         C_occupied = C_np[:, 0:self.N_occ]
         # Compute density matrix
-        Density = Matrix.from_array(np.matmul(C_occupied, C_occupied.T))
+        Density = np.matmul(C_occupied, C_occupied.T)
         # Compute the update to the non-core portion of the Hamiltonian
         # there's probably a way to use matrix multiplications?
         for mu in range(self.nbf):
             for nu in range(self.nbf):
-                update = self.h.get(mu, nu)
-                for rho in range(self.nbf):
-                    for sigm in range(self.nbf):
-                        update += Density.get(rho, sigm) * (2 * self.ERI[mu][nu][rho][sigm] - self.ERI[mu][rho][nu][sigm])
+                update = self.h.get(mu, nu) + np.sum(Density * (2 * self.ERI[mu][nu] - self.ERI2[mu][nu]))
                 self.Fock.set(mu, nu, update)
 
         ### Calculate electronic energy ###
+        Density = Matrix.from_array(Density)
         newE = Density.vector_dot(self.h) + Density.vector_dot(self.Fock) + self.ENuclear
         self.energies.append(newE)
 
 
-    def iter_until(self, convergence_threshold: float, max_iter = 1000):
+    def iter_until(self, convergence_threshold: float, max_iter = 200):
         self.run_SCF_iteration()
         self.run_SCF_iteration()
         for i in range(max_iter):

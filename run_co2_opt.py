@@ -9,10 +9,11 @@ import os.path
 
 CONVERGENCE = 2e-7 # Hartrees
 CONVERGENCE_2 = 1e-9
+BASIS = '6-31gs'
 
 co2elez = [8, 6, 8]
 
-if not os.path.isfile('co2line_coarse.csv'):
+if not os.path.isfile(f'co2line_coarse{BASIS}.csv'):
     # define CO2 line search
     co2_bondlengths = [1.4 - i * 0.003 for i in range(100)]
     co2xyz = [[[-length, 0, 0], [0, 0, 0], [length, 0, 0]] for length in co2_bondlengths]
@@ -23,27 +24,27 @@ if not os.path.isfile('co2line_coarse.csv'):
         print("Computing energy for CO2 bond length co2_bondlength:", co2_bondlengths[idx])
         co2 = Molecule.from_arrays(geom=xyz, elez=co2elez)
         N_elec = np.sum(co2elez)
-        basisset = BasisSet.build(co2, target='sto-3g', quiet=idx > 0)
+        basisset = BasisSet.build(co2, target=BASIS, quiet=idx > 0)
 
         # set up the calculation
         co2_HF = SCF(co2, N_elec, basisset)
         co2_HF.iter_until(CONVERGENCE)
-        co2_HF.check_consistency()
-        print(co2_HF.energies)
+        # co2_HF.check_consistency()
+        # print(co2_HF.energies)
         co2_opt_energies.append(co2_HF.energies[-1])
 
-    with open('co2line_coarse.csv', 'w', newline='') as csvfile:
+    with open(f'co2line_coarse{BASIS}.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(("length", "energy"))
         for lengthenergy in zip(co2_bondlengths, co2_opt_energies):
             writer.writerow(lengthenergy)
 
 # perform fine CO2 line search
-if os.path.isfile('co2line_coarse.csv') and not os.path.isfile('co2line_fine.csv'):
+if os.path.isfile(f'co2line_coarse{BASIS}.csv') and not os.path.isfile(f'co2line_fine{BASIS}.csv'):
     # define new search based on the coarse output
     co2_opt_energies = []
     co2_bondlengths = []
-    with open('co2line_coarse.csv', 'r', newline='') as file:
+    with open(f'co2line_coarse{BASIS}.csv', 'r', newline='') as file:
         reader = csv.reader(file)
         next(reader) # skip the header
         for row in reader:
@@ -68,7 +69,7 @@ if os.path.isfile('co2line_coarse.csv') and not os.path.isfile('co2line_fine.csv
         co2_HF2.iter_until(CONVERGENCE_2)
         fine_co2_opt_energies.append(co2_HF2.energies[-1])
 
-    with open('co2line_fine.csv', 'w', newline='') as csvfile:
+    with open(f'co2line_fine{BASIS}.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(("length", "energy"))
         for lengthenergy in zip(fine_bondlengths, fine_co2_opt_energies):
