@@ -14,6 +14,7 @@ BASIS = '6-31gs'
 
 co2elez = [8, 6, 8]
 
+
 if not os.path.isfile(f'co2line_coarse{BASIS}.csv'):
     # define CO2 line search
     co2_bondlengths = [1.23 - i * 0.003 for i in range(50)]
