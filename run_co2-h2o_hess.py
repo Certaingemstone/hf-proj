@@ -28,7 +28,7 @@ if MODE == "num":
     h2o = hess.numhess(h2o_coords, h2o_elez, '6-31gs', delta=0.001)
     np.save('h2ohess_6-31gs', h2o)
 
-# using the (analytic) Hessian for RHF that psi4 natively provides
+# using the (semi-numerical) Hessian for HF that psi4 natively provides
 elif MODE == "psi4":
     co2_coords = [[-1.14328, 0, 0], [0,0,0], [1.14328, 0, 0]]
     h2o_coords = [[0.94725, 0, 0], [0,0,0], [0.94725 * -0.267407, 0.94725 * 0.963584, 0]]
@@ -36,10 +36,16 @@ elif MODE == "psi4":
     #hessian = co2hess_psi.to_array()
     #np.save('co2hess_6-31gs_psi4', hessian)
 
-    co2E, co2psi = hess.psi4freq(co2_coords, co2_elez, '6-31gs')
-    print(co2E)
+    #co2E, co2psi = hess.psi4freq(co2_coords, co2_elez, '6-31gs')
+    #print(co2E)
+    #print("VIBRATIONAL ANALYSIS")
+    #freqs = co2psi.frequencies()
+    #print(freqs.to_array())
+
+    h2oE, h2opsi = hess.psi4freq(h2o_coords, h2o_elez, '6-31gs')
+    print(h2oE)
     print("VIBRATIONAL ANALYSIS")
-    freqs = co2psi.frequencies()
+    freqs = h2opsi.frequencies()
     print(freqs.to_array())
 
 
