@@ -40,6 +40,16 @@ def psi4freq(coords, elez, basis):
     E, wfn = psi4.frequency('hf', molecule=mol, return_wfn=True, irrep=-1)
     return E, wfn
 
+def psi4freq_dft(coords, elez, basis, xcfunctional):
+    mol = psi4.core.Molecule.from_arrays(geom=coords, elez=elez)
+    psi4.set_options({
+        "basis": basis,
+        "scf_type": "df",
+        "scf__reference": "rhf"
+    })
+    E, wfn = psi4.frequency(xcfunctional, molecule=mol, return_wfn=True, irrep=-1)
+    return E, wfn
+
 def numhess(coords, elez, basis, delta=0.001):
     """For equilibrium coords and element Zs, compute numerical Hessian in basis target string"""
     

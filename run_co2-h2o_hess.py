@@ -1,7 +1,7 @@
 import hess
 import numpy as np
 
-MODE = "psi4"
+MODE = None # SET THIS
 
 co2_elez = [8, 6, 8]
 h2o_elez = [1, 8, 1]
@@ -32,20 +32,36 @@ if MODE == "num":
 elif MODE == "psi4":
     co2_coords = [[-1.14328, 0, 0], [0,0,0], [1.14328, 0, 0]]
     h2o_coords = [[0.94725, 0, 0], [0,0,0], [0.94725 * -0.267407, 0.94725 * 0.963584, 0]]
-    #co2hess_psi = hess.psi4hess(co2_coords, co2_elez, '6-31gs')
-    #hessian = co2hess_psi.to_array()
-    #np.save('co2hess_6-31gs_psi4', hessian)
+    co2hess_psi = hess.psi4hess(co2_coords, co2_elez, '6-31gs')
+    hessian = co2hess_psi.to_array()
+    np.save('co2hess_6-31gs_psi4', hessian)
 
-    #co2E, co2psi = hess.psi4freq(co2_coords, co2_elez, '6-31gs')
-    #print(co2E)
-    #print("VIBRATIONAL ANALYSIS")
-    #freqs = co2psi.frequencies()
-    #print(freqs.to_array())
+    co2E, co2psi = hess.psi4freq(co2_coords, co2_elez, '6-31gs')
+    print(co2E)
+    print("VIBRATIONAL ANALYSIS")
+    freqs = co2psi.frequencies()
+    print(freqs.to_array())
 
     h2oE, h2opsi = hess.psi4freq(h2o_coords, h2o_elez, '6-31gs')
     print(h2oE)
     print("VIBRATIONAL ANALYSIS")
     freqs = h2opsi.frequencies()
     print(freqs.to_array())
+
+# oops, it seems the Expanse allocation ran out
+elif MODE == "dft":
+    co2_coords = [[-1.160349, 0, 0], [0,0,0], [1.160349, 0, 0]]
+    h2o_coords = [[0.96131, 0, 0], [0,0,0], [-0.24017, 0.93082, 0]]
+
+    co2E, co2psi = hess.psi4freq_dft(co2_coords, co2_elez, 'cc-pVTZ', 'b3lyp')
+    print(co2E)
+    print("VIBRATIONAL ANALYSIS")
+    print(co2psi.frequencies().to_array())
+
+    h2oE, h2opsi = hess.psi4freq_dft(h2o_coords, h2o_elez, 'cc-pVTZ', 'b3lyp')
+    print(h2oE)
+    print("VIBRATIONAL ANALYSIS")
+    print(h2opsi.frequencies().to_array())
+
 
 
